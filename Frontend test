@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TripFlow AI Test</title>
+</head>
+<body>
+
+<h1>TripFlow AI Testpagina</h1>
+
+<pre id="output"></pre>
+
+<script>
+  alert("Script werkt!");  // Check of script geladen wordt
+
+  async function testFetch() {
+    const output = document.getElementById('output');
+    output.textContent = "Test fetch naar backend gestart...";
+
+    try {
+      const response = await fetch('https://tripflow-backend-lmtd.onrender.com/generate-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stad: "Amsterdam",
+          dagen: 2,
+          interesses: "cultuur, eten",
+          tempo: "gemiddeld"
+        })
+      });
+
+      output.textContent = `Response status: ${response.status}`;
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        output.textContent = `Serverfout: ${response.status} - ${errorText}`;
+        return;
+      }
+
+      const result = await response.json();
+      output.textContent = "Planning ontvangen:\n\n" + (result.planning || 'Geen planning ontvangen.');
+    } catch (error) {
+      output.textContent = 'Fout bij ophalen planning: ' + error.message;
+    }
+  }
+
+  testFetch();
+</script>
+
+</body>
+</html>
