@@ -29,8 +29,14 @@
     const form = document.getElementById('tripForm');
     const output = document.getElementById('output');
 
+    if (!form) {
+      console.error('Formulier niet gevonden!');
+      return;
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      alert("Submit event afgevangen!");
 
       const data = {
         stad: document.getElementById('stad').value,
