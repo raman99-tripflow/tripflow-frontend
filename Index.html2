@@ -49,7 +49,9 @@
         body: JSON.stringify(data)
       });
 
-      if (!response.ok) throw new Error('Serverfout');
+      output.textContent = `Response status: ${response.status}`;
+
+      if (!response.ok) throw new Error('Serverfout: ' + response.status);
 
       const result = await response.json();
       output.textContent = result.planning || 'Geen planning ontvangen.';
