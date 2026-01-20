@@ -68,6 +68,12 @@
     });
   });
 </script>
+<h3 id="debugStatus"></h3>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById("debugStatus").textContent = "SCRIPT is geladen";
+});
+</script>
 </body>
 </html>
