@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TripFlow Test</title>
+</head>
+<body>
+
+<h1>TripFlow werkt</h1>
+<p id="status"></p>
+
+<form id="tripForm">
+  <button type="submit">Test submit</button>
+</form>
+
+<script>
+document.getElementById("status").textContent = "SCRIPT IS GELADEN";
+
+document.getElementById("tripForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  alert("SUBMIT WERKT");
+});
+</script>
+
+</body>
+</html>
