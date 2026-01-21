@@ -29,12 +29,6 @@
     <option value="hoog">Hoog budget</option>
   </select><br><br>
 
-  <select id="vervoer">
-    <option value="lopen">Voornamelijk lopen</option>
-    <option value="ov" selected>Openbaar vervoer</option>
-    <option value="taxi">Taxi / Uber</option>
-  </select><br><br>
-
   <button type="submit">Maak mijn planning</button>
 </form>
 
@@ -55,8 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       personen: parseInt(document.getElementById("personen").value),
       interesses: document.getElementById("interesses").value,
       tempo: document.getElementById("tempo").value,
-      budget: document.getElementById("budget").value,
-      vervoer: document.getElementById("vervoer").value
+      budget: document.getElementById("budget").value
     };
 
     output.textContent = "AI is je reis aan het plannen...";
