@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
+  <meta charset="UTF-8" />
   <title>TripFlow AI</title>
 </head>
 <body>
 
 <h1>Plan je citytrip met AI</h1>
 
-<p id="status">Script geladen ✅</p>
-
 <form id="tripForm">
   <input id="stad" placeholder="Stad" required /><br><br>
+
   <input id="dagen" type="number" placeholder="Aantal dagen" required /><br><br>
+
+  <input id="personen" type="number" placeholder="Aantal personen" value="2" required /><br><br>
+
   <input id="interesses" placeholder="Interesses (bv. cultuur, eten)" /><br><br>
 
   <select id="tempo">
@@ -20,44 +23,66 @@
     <option value="actief">Actief</option>
   </select><br><br>
 
+  <select id="budget">
+    <option value="laag">Laag budget</option>
+    <option value="gemiddeld" selected>Gemiddeld budget</option>
+    <option value="hoog">Hoog budget</option>
+  </select><br><br>
+
+  <select id="vervoer">
+    <option value="lopen">Voornamelijk lopen</option>
+    <option value="ov" selected>Openbaar vervoer</option>
+    <option value="taxi">Taxi / Uber</option>
+  </select><br><br>
+
   <button type="submit">Maak mijn planning</button>
 </form>
 
-<h2>Planning:</h2>
+<h2>Planning</h2>
 <pre id="output"></pre>
 
 <script>
-document.getElementById("tripForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("tripForm");
   const output = document.getElementById("output");
-  output.textContent = "AI is je planning aan het maken...";
 
-  const data = {
-    stad: document.getElementById("stad").value,
-    dagen: Number(document.getElementById("dagen").value),
-    interesses: document.getElementById("interesses").value,
-    tempo: document.getElementById("tempo").value
-  };
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("https://tripflow-backend-lmtd.onrender.com/generate-plan", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
+    const data = {
+      stad: document.getElementById("stad").value,
+      dagen: parseInt(document.getElementById("dagen").value),
+      personen: parseInt(document.getElementById("personen").value),
+      interesses: document.getElementById("interesses").value,
+      tempo: document.getElementById("tempo").value,
+      budget: document.getElementById("budget").value,
+      vervoer: document.getElementById("vervoer").value
+    };
 
-    if (!response.ok) {
-      output.textContent = "Serverfout: " + response.status;
-      return;
+    output.textContent = "AI is je reis aan het plannen...";
+
+    try {
+      const response = await fetch(
+        "https://tripflow-backend-lmtd.onrender.com/generate-plan",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        output.textContent = "Fout: " + (result.error || "Onbekende fout");
+        return;
+      }
+
+      output.textContent = result.planning;
+    } catch (err) {
+      output.textContent = "Netwerkfout: " + err.message;
     }
-
-    const result = await response.json();
-    output.textContent = result.planning;
-
-  } catch (err) {
-    output.textContent = "Fout bij ophalen planning";
-  }
+  });
 });
 </script>
 
