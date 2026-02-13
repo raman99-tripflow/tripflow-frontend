@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TripFlow AI</title>
+<title>TripFlow</title>
 
 <style>
 body {
@@ -13,51 +13,33 @@ body {
   color: #1f2937;
 }
 
-/* HERO */
-.hero {
-  background: linear-gradient(135deg, #111827, #1f2937);
+/* TOP BAR */
+.topbar {
+  background: #111827;
   color: white;
-  padding: 4rem 1.5rem;
-  text-align: center;
-}
-
-.hero h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.hero p {
-  opacity: 0.9;
-  max-width: 600px;
-  margin: auto;
-  margin-bottom: 2rem;
-}
-
-.hero button {
-  padding: 14px 24px;
-  border-radius: 12px;
-  border: none;
+  padding: 16px 24px;
   font-weight: 600;
-  cursor: pointer;
-  background: white;
-  color: #111827;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
 }
 
-/* CONTAINER */
+/* LAYOUT */
 .container {
-  max-width: 700px;
+  max-width: 720px;
   margin: auto;
-  padding: 2rem;
+  padding: 2rem 1.5rem;
 }
 
 .card {
   background: white;
   padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
   margin-bottom: 1.5rem;
 }
 
+/* FORM */
 input, select {
   width: 100%;
   padding: 12px;
@@ -67,10 +49,15 @@ input, select {
   font-size: 1rem;
 }
 
-button.submit-btn {
+input:focus, select:focus {
+  outline: none;
+  border-color: #111827;
+}
+
+button {
   width: 100%;
   padding: 14px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
   background: #111827;
   color: white;
@@ -79,62 +66,49 @@ button.submit-btn {
   cursor: pointer;
 }
 
+button:hover {
+  opacity: 0.9;
+}
+
+/* RESULT */
 .loading {
   text-align: center;
   font-style: italic;
   color: #6b7280;
 }
 
-.day-block {
-  margin-bottom: 2rem;
-}
-
 .day-title {
   font-weight: 700;
   margin-bottom: 1rem;
-  font-size: 1.2rem;
-  border-bottom: 2px solid #e5e7eb;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #e5e7eb;
   padding-bottom: 0.5rem;
 }
 
 .section-title {
   font-weight: 600;
   margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   color: #111827;
 }
 
 .activity {
-  margin-bottom: 0.7rem;
-  padding: 0.8rem;
+  margin-bottom: 0.6rem;
+  padding: 0.7rem;
   background: #f3f4f6;
-  border-left: 4px solid #111827;
   border-radius: 8px;
   font-size: 0.95rem;
-}
-
-.footer {
-  text-align: center;
-  font-size: 0.8rem;
-  margin: 3rem 0;
-  color: #9ca3af;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
-<section class="hero">
-  <h1>Plan je citytrip met AI</h1>
-  <p>
-    TripFlow maakt automatisch een slimme, realistische planning 
-    op basis van jouw tempo, budget en interesses.
-  </p>
-  <button onclick="scrollToPlanner()">Start met plannen</button>
-</section>
+<div class="topbar">
+  📍 TripFlow
+</div>
 
-<div class="container" id="planner">
+<div class="container">
 
 <div class="card">
 <form id="tripForm">
@@ -155,23 +129,15 @@ button.submit-btn {
     <option value="hoog">Hoog budget</option>
   </select>
 
-  <button type="submit" class="submit-btn">Genereer mijn planning</button>
+  <button type="submit">Genereer planning</button>
 </form>
 </div>
 
 <div id="result"></div>
 
-<div class="footer">
-  TripFlow AI – Slimme citytrip planner
-</div>
-
 </div>
 
 <script>
-
-function scrollToPlanner() {
-  document.getElementById("planner").scrollIntoView({ behavior: "smooth" });
-}
 
 function capitalizeInput(id) {
   const input = document.getElementById(id);
@@ -217,45 +183,4 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
     displayPlanning(resultData.planning);
 
   } catch (err) {
-    result.innerHTML = `<div class="card">Netwerkfout: ${err.message}</div>`;
-  }
-});
-
-function displayPlanning(text) {
-  const result = document.getElementById("result");
-
-  if (!text) {
-    result.innerHTML = `<div class="card">Geen planning ontvangen.</div>`;
-    return;
-  }
-
-  const dayBlocks = text.split(/(?=Dag\s\d+)/g);
-  let html = "";
-
-  dayBlocks.forEach(block => {
-    const lines = block.split("\n").filter(l => l.trim() !== "");
-    const dayTitle = lines[0];
-
-    html += `<div class="card day-block">
-              <div class="day-title">${dayTitle}</div>`;
-
-    lines.slice(1).forEach(line => {
-
-      if (line.includes("Ochtend") || line.includes("Middag") || line.includes("Avond") || line.includes("Rustmoment") || line.includes("Slecht")) {
-        html += `<div class="section-title">${line}</div>`;
-      } else {
-        html += `<div class="activity">${line}</div>`;
-      }
-
-    });
-
-    html += `</div>`;
-  });
-
-  result.innerHTML = html;
-}
-
-</script>
-
-</body>
-</html>
+    result.innerHTML = `<div
