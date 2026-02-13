@@ -101,7 +101,7 @@ button:hover {
 <form id="tripForm">
   <input id="stad" placeholder="Stad" required />
   <input id="dagen" type="number" placeholder="Aantal dagen" required />
-  <input id="personen" type="number" placeholder="Aantal personen" value="2" required />
+  <input id="personen" type="number" placeholder="Aantal personen" required />
   <input id="interesses" placeholder="Interesses (bv. cultuur, eten)" />
 
   <select id="tempo">
@@ -129,6 +129,20 @@ button:hover {
 </div>
 
 <script>
+
+// Automatische hoofdletter bij invoer
+function capitalizeInput(id) {
+  const input = document.getElementById(id);
+  input.addEventListener("input", function() {
+    if (this.value.length > 0) {
+      this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+    }
+  });
+}
+
+capitalizeInput("stad");
+capitalizeInput("interesses");
+
 document.getElementById("tripForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
@@ -136,10 +150,10 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
   result.innerHTML = `<div class="card loading">AI is je reis aan het plannen...</div>`;
 
   const data = {
-    stad: document.getElementById("stad").value,
+    stad: document.getElementById("stad").value.trim(),
     dagen: parseInt(document.getElementById("dagen").value),
     personen: parseInt(document.getElementById("personen").value),
-    interesses: document.getElementById("interesses").value,
+    interesses: document.getElementById("interesses").value.trim(),
     tempo: document.getElementById("tempo").value,
     budget: document.getElementById("budget").value
   };
@@ -168,7 +182,6 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
 function displayPlanning(text) {
   const result = document.getElementById("result");
 
-  // Split per dag met behoud van dagtitel
   const dayBlocks = text.match(/Dag\s\d+[\s\S]*?(?=Dag\s\d+|$)/g);
 
   if (!dayBlocks) {
@@ -182,7 +195,7 @@ function displayPlanning(text) {
 
     const lines = block.split("\n").filter(l => l.trim() !== "");
 
-    const dayTitle = lines[0]; // "Dag 1 – Centrum"
+    const dayTitle = lines[0];
 
     html += `
       <div class="card day-block">
@@ -198,23 +211,7 @@ function displayPlanning(text) {
 
   result.innerHTML = html;
 }
-  const result = document.getElementById("result");
 
-  const days = text.split(/Dag \d+/).filter(d => d.trim() !== "");
-
-  let html = "";
-
-  days.forEach((day, index) => {
-    html += `
-      <div class="card day-block">
-        <div class="day-title">Dag ${index + 1}</div>
-        ${day.split("\n").map(line => line.trim() !== "" ? `<div class="activity">${line}</div>` : "").join("")}
-      </div>
-    `;
-  });
-
-  result.innerHTML = html;
-}
 </script>
 
 </body>
