@@ -182,19 +182,17 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
 function displayPlanning(text) {
   const result = document.getElementById("result");
 
-  const dayBlocks = text.match(/Dag\s\d+[\s\S]*?(?=Dag\s\d+|$)/g);
-
-  if (!dayBlocks) {
+  if (!text || text.length < 10) {
     result.innerHTML = `<div class="card">Geen geldige planning ontvangen.</div>`;
     return;
   }
 
+  const dayBlocks = text.split(/(?=Dag\s\d+)/g);
+
   let html = "";
 
   dayBlocks.forEach((block) => {
-
     const lines = block.split("\n").filter(l => l.trim() !== "");
-
     const dayTitle = lines[0];
 
     html += `
@@ -211,7 +209,7 @@ function displayPlanning(text) {
 
   result.innerHTML = html;
 }
-
+  
 </script>
 
 </body>
