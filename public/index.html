@@ -13,6 +13,37 @@ body {
   color: #1f2937;
 }
 
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #111827, #1f2937);
+  color: white;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  opacity: 0.9;
+  max-width: 600px;
+  margin: auto;
+  margin-bottom: 2rem;
+}
+
+.hero button {
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+  color: #111827;
+}
+
+/* CONTAINER */
 .container {
   max-width: 700px;
   margin: auto;
@@ -27,11 +58,6 @@ body {
   margin-bottom: 1.5rem;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
 input, select {
   width: 100%;
   padding: 12px;
@@ -41,7 +67,7 @@ input, select {
   font-size: 1rem;
 }
 
-button {
+button.submit-btn {
   width: 100%;
   padding: 14px;
   border-radius: 12px;
@@ -51,10 +77,6 @@ button {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-}
-
-button:hover {
-  background: #1f2937;
 }
 
 .loading {
@@ -71,6 +93,15 @@ button:hover {
   font-weight: 700;
   margin-bottom: 1rem;
   font-size: 1.2rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.section-title {
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #111827;
 }
 
 .activity {
@@ -85,7 +116,7 @@ button:hover {
 .footer {
   text-align: center;
   font-size: 0.8rem;
-  margin-top: 2rem;
+  margin: 3rem 0;
   color: #9ca3af;
 }
 </style>
@@ -93,9 +124,17 @@ button:hover {
 
 <body>
 
-<div class="container">
+<!-- HERO -->
+<section class="hero">
+  <h1>Plan je citytrip met AI</h1>
+  <p>
+    TripFlow maakt automatisch een slimme, realistische planning 
+    op basis van jouw tempo, budget en interesses.
+  </p>
+  <button onclick="scrollToPlanner()">Start met plannen</button>
+</section>
 
-<h1>TripFlow ✈️</h1>
+<div class="container" id="planner">
 
 <div class="card">
 <form id="tripForm">
@@ -116,7 +155,7 @@ button:hover {
     <option value="hoog">Hoog budget</option>
   </select>
 
-  <button type="submit">Genereer mijn planning</button>
+  <button type="submit" class="submit-btn">Genereer mijn planning</button>
 </form>
 </div>
 
@@ -130,7 +169,10 @@ button:hover {
 
 <script>
 
-// Automatische hoofdletter bij invoer
+function scrollToPlanner() {
+  document.getElementById("planner").scrollIntoView({ behavior: "smooth" });
+}
+
 function capitalizeInput(id) {
   const input = document.getElementById(id);
   input.addEventListener("input", function() {
@@ -182,26 +224,29 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
 function displayPlanning(text) {
   const result = document.getElementById("result");
 
-  if (!text || text.length < 10) {
-    result.innerHTML = `<div class="card">Geen geldige planning ontvangen.</div>`;
+  if (!text) {
+    result.innerHTML = `<div class="card">Geen planning ontvangen.</div>`;
     return;
   }
 
   const dayBlocks = text.split(/(?=Dag\s\d+)/g);
-
   let html = "";
 
-  dayBlocks.forEach((block) => {
+  dayBlocks.forEach(block => {
     const lines = block.split("\n").filter(l => l.trim() !== "");
     const dayTitle = lines[0];
 
-    html += `
-      <div class="card day-block">
-        <div class="day-title">${dayTitle}</div>
-    `;
+    html += `<div class="card day-block">
+              <div class="day-title">${dayTitle}</div>`;
 
     lines.slice(1).forEach(line => {
-      html += `<div class="activity">${line}</div>`;
+
+      if (line.includes("Ochtend") || line.includes("Middag") || line.includes("Avond") || line.includes("Rustmoment") || line.includes("Slecht")) {
+        html += `<div class="section-title">${line}</div>`;
+      } else {
+        html += `<div class="activity">${line}</div>`;
+      }
+
     });
 
     html += `</div>`;
@@ -209,7 +254,7 @@ function displayPlanning(text) {
 
   result.innerHTML = html;
 }
-  
+
 </script>
 
 </body>
