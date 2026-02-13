@@ -6,52 +6,62 @@
 <title>TripFlow</title>
 
 <style>
+:root {
+  --bg: #f8f9fb;
+  --card: #ffffff;
+  --border: #e6e8ec;
+  --text: #111111;
+  --muted: #6b7280;
+  --accent: #111827;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f4f6f9;
-  color: #1f2937;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* TOP BAR */
 .topbar {
-  background: #111827;
+  background: var(--accent);
   color: white;
-  padding: 16px 24px;
-  font-weight: 600;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
+  padding: 18px 28px;
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
 }
 
 /* LAYOUT */
 .container {
-  max-width: 720px;
+  max-width: 680px;
   margin: auto;
-  padding: 2rem 1.5rem;
+  padding: 3rem 1.5rem;
 }
 
 .card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-  margin-bottom: 1.5rem;
+  background: var(--card);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
 }
 
 /* FORM */
 input, select {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
   border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  font-size: 1rem;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  background: #fafafa;
 }
 
 input:focus, select:focus {
   outline: none;
-  border-color: #111827;
+  border-color: var(--accent);
+  background: white;
 }
 
 button {
@@ -59,11 +69,12 @@ button {
   padding: 14px;
   border-radius: 10px;
   border: none;
-  background: #111827;
+  background: var(--accent);
   color: white;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
 button:hover {
@@ -74,30 +85,43 @@ button:hover {
 .loading {
   text-align: center;
   font-style: italic;
-  color: #6b7280;
+  color: var(--muted);
+}
+
+.day-card {
+  margin-bottom: 2.5rem;
 }
 
 .day-title {
-  font-weight: 700;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .section-title {
-  font-weight: 600;
-  margin-top: 1rem;
-  margin-bottom: 0.4rem;
-  color: #111827;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-top: 1.4rem;
+  margin-bottom: 0.6rem;
 }
 
 .activity {
-  margin-bottom: 0.6rem;
-  padding: 0.7rem;
+  padding: 0.8rem 0.9rem;
   background: #f3f4f6;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 3rem;
 }
 </style>
 </head>
@@ -135,6 +159,10 @@ button:hover {
 
 <div id="result"></div>
 
+<div class="footer">
+  AI-powered citytrip planning
+</div>
+
 </div>
 
 <script>
@@ -155,7 +183,7 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
   e.preventDefault();
 
   const result = document.getElementById("result");
-  result.innerHTML = `<div class="card loading">AI is je reis aan het plannen...</div>`;
+  result.innerHTML = `<div class="card loading">Planning wordt gegenereerd...</div>`;
 
   const data = {
     stad: document.getElementById("stad").value.trim(),
@@ -183,4 +211,45 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
     displayPlanning(resultData.planning);
 
   } catch (err) {
-    result.innerHTML = `<div
+    result.innerHTML = `<div class="card">Netwerkfout: ${err.message}</div>`;
+  }
+});
+
+function displayPlanning(text) {
+  const result = document.getElementById("result");
+
+  if (!text) {
+    result.innerHTML = `<div class="card">Geen planning ontvangen.</div>`;
+    return;
+  }
+
+  const dayBlocks = text.split(/(?=Dag\s\d+)/g);
+  let html = "";
+
+  dayBlocks.forEach(block => {
+    const lines = block.split("\n").filter(l => l.trim() !== "");
+    const dayTitle = lines[0];
+
+    html += `<div class="card day-card">
+              <div class="day-title">${dayTitle}</div>`;
+
+    lines.slice(1).forEach(line => {
+
+      if (line.includes("Ochtend") || line.includes("Middag") || line.includes("Avond") || line.includes("Rustmoment") || line.includes("Slecht")) {
+        html += `<div class="section-title">${line}</div>`;
+      } else {
+        html += `<div class="activity">${line}</div>`;
+      }
+
+    });
+
+    html += `</div>`;
+  });
+
+  result.innerHTML = html;
+}
+
+</script>
+
+</body>
+</html>
