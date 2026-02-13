@@ -74,10 +74,12 @@ button:hover {
 }
 
 .activity {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: #f9fafb;
-  border-radius: 12px;
+  margin-bottom: 0.7rem;
+  padding: 0.8rem;
+  background: #f3f4f6;
+  border-left: 4px solid #111827;
+  border-radius: 8px;
+  font-size: 0.95rem;
 }
 
 .footer {
@@ -164,6 +166,38 @@ document.getElementById("tripForm").addEventListener("submit", async function(e)
 });
 
 function displayPlanning(text) {
+  const result = document.getElementById("result");
+
+  // Split per dag met behoud van dagtitel
+  const dayBlocks = text.match(/Dag\s\d+[\s\S]*?(?=Dag\s\d+|$)/g);
+
+  if (!dayBlocks) {
+    result.innerHTML = `<div class="card">Geen geldige planning ontvangen.</div>`;
+    return;
+  }
+
+  let html = "";
+
+  dayBlocks.forEach((block) => {
+
+    const lines = block.split("\n").filter(l => l.trim() !== "");
+
+    const dayTitle = lines[0]; // "Dag 1 – Centrum"
+
+    html += `
+      <div class="card day-block">
+        <div class="day-title">${dayTitle}</div>
+    `;
+
+    lines.slice(1).forEach(line => {
+      html += `<div class="activity">${line}</div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  result.innerHTML = html;
+}
   const result = document.getElementById("result");
 
   const days = text.split(/Dag \d+/).filter(d => d.trim() !== "");
